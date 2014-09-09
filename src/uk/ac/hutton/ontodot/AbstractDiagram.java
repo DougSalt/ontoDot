@@ -92,7 +92,7 @@ public abstract class AbstractDiagram implements Diagram {
   }
 
   public void ignoreOntology(String namespace) {
-    ignoreOntology(prefix.getIRI(namespace + ":"));
+    ignoreOntology(prefix.getIRI(namespace));
   }
 
   public void ignoreOntology(OWLOntology ontology) {
