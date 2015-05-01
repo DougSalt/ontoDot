@@ -90,6 +90,18 @@ public class DotGraph extends AbstractGraph {
     nodeDefaults.put(label, new DotNodeAttribute(label, value));
   }
   
+  public boolean hasNodeDefault(String label) {
+  	return nodeDefaults.containsKey(label);
+  }
+  
+  public String getNodeDefault(String label) {
+  	return nodeDefaults.get(label).value();
+  }
+  
+  public Class<?> getNodeDefaultType(String label) {
+  	return nodeDefaults.get(label).type();
+  }
+  
   public void setNodeDefault(String label, Color value) throws DotInvalidAttributeException {
     nodeDefaults.put(label, new DotNodeAttribute(label, value));
   }
@@ -108,6 +120,18 @@ public class DotGraph extends AbstractGraph {
   
   public void setEdgeDefault(String label, Color value) throws DotInvalidAttributeException {
     edgeDefaults.put(label, new DotEdgeAttribute(label, value));
+  }
+  
+  public boolean hasEdgeDefault(String label) {
+  	return edgeDefaults.containsKey(label);
+  }
+  
+  public String getEdgeDefault(String label) {
+  	return edgeDefaults.get(label).value();
+  }
+  
+  public Class<?> getEdgeDefaultType(String label) {
+  	return edgeDefaults.get(label).type();
   }
   
   public String indent() {

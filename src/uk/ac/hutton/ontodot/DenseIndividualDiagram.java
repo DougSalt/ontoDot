@@ -73,7 +73,7 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 		Map<OWLIndividual, OWLClass> clsMap = new HashMap<OWLIndividual, OWLClass>();
 		for(OWLOntology ont: search(ontology)) {
 			for(OWLAxiom axiom: ont.getAxioms()) {
-				if(axiom instanceof OWLClassAssertionAxiom && !ignoring(axiom.getSignature())) {
+				if(axiom instanceof OWLClassAssertionAxiom) {
 					OWLClassAssertionAxiom clsAxiom = (OWLClassAssertionAxiom)axiom;
 
 					OWLClassExpression clsexpr = clsAxiom.getClassExpression();
@@ -96,7 +96,7 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 		}
 
 		// Prepare to build a palette of lots of colours
-		
+
 		Set<Color> palette = new HashSet<Color>();
 		int[] paletteCounters = new int[] { 0x00, 0x00, 0x00, 0x80 };
 
@@ -119,36 +119,37 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 
 						String instr = getShortForm(in.asOWLNamedIndividual());
 						String outstr = getShortForm(out.asOWLNamedIndividual());
-						
+
 						if(expr.isAnonymous()) {
 							String tmpstr = instr;
 							instr = outstr;
 							outstr = tmpstr;
 						}
-						
+
 						// Add the edge with no label
 						Edge edge = graph.addEdge(instr, outstr);
 
 						if(edge instanceof DotEdge) {
 							// Colour the nodes and edges
-							
+
 							DotEdge dedge = (DotEdge)edge;
 
 							Node nin = graph.getNode(instr);
 							Node nout = graph.getNode(outstr);
 
 							if(clsMap.containsKey(in)) {
-								
+
 								OWLClass cls = clsMap.get(in);
-								
+
 								if(cls != null && nin instanceof DotNode) {
 									// Colour the input node
 									if(!clsClrs.containsKey(cls)) {
 										clsClrs.put(cls, newColour(palette, paletteCounters));
 									}
-									
+
 									DotNode dnin = (DotNode)nin;
 									try {
+										dnin.setAttribute("fillcolor", clsClrs.get(cls));
 										dnin.setAttribute("color", clsClrs.get(cls));
 									}
 									catch(DotInvalidAttributeException e) {
@@ -157,32 +158,33 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 								}
 							}
 							if(clsMap.containsKey(out)) {
-								
+
 								OWLClass cls = clsMap.get(out);
-								
+
 								if(cls != null && nout instanceof DotNode) {
 									// Colour the output node
-									
+
 									if(!clsClrs.containsKey(cls)) {
 										clsClrs.put(cls, newColour(palette, paletteCounters));
 									}
-									
+
 									DotNode dnout = (DotNode)nout;
 									try {
+										dnout.setAttribute("fillcolor", clsClrs.get(cls));
 										dnout.setAttribute("color", clsClrs.get(cls));
 									}
 									catch(DotInvalidAttributeException e) {
 										throw new RuntimeException(e);
 									}
-								}	
+								}
 							}
-							
-							// Colour the edge 
-							
+
+							// Colour the edge
+
 							if(!propClrs.containsKey(prop)) {
 								propClrs.put(prop, newColour(palette, paletteCounters));
 							}
-							
+
 							try {
 								dedge.setAttribute("color", propClrs.get(prop));
 							}
@@ -194,23 +196,38 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 				}
 			}
 		}
+
+		// Print a CSV for the legend
+		System.out.println("type,url,R,G,B");
+		for(OWLClass cls: clsClrs.keySet()) {
+			Color clr = clsClrs.get(cls);
+			System.out.println("node," + cls.getIRI().getFragment() + "," + clr.getRed() + "," + clr.getGreen() + ","
+					+ clr.getBlue());
+		}
+		for(OWLObjectProperty prop: propClrs.keySet()) {
+			Color clr = propClrs.get(prop);
+			System.out.println("edge," + prop.getIRI().getFragment() + "," + clr.getRed() + "," + clr.getGreen() + ","
+					+ clr.getBlue());
+		}
 	}
 
 	private Color newColour(Set<Color> palette, int[] counters) {
 		Color newColour = null;
 
 		for(int i = 0; i < counters.length; i++) {
-			counters[i] += counters[counters.length - 1];
 			if(i < counters.length - 1) {
-				if(counters[i] < 0x100 && !palette.contains(newColour)) {
+				counters[i] += counters[counters.length - 1];
+				if(counters[i] < 0x100) {
 					newColour = new Color(counters[0], counters[1], counters[2]);
-					break;
+					if(!palette.contains(newColour)) {
+						break;
+					}
 				}
-				else if(counters[i] >= 0x100) {
+				else {
 					counters[i] = 0x00;
 				}
 			}
-			if(i == counters.length - 1) {
+			else {
 				if(counters[i] == 1) {
 					throw new RuntimeException("Run out of colours!");
 				}
@@ -218,7 +235,7 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 				for(int j = 0; j < i; j++) {
 					counters[j] = 0x00;
 				}
-				i = 0;
+				i = -1;
 			}
 		}
 		if(newColour == null) {
