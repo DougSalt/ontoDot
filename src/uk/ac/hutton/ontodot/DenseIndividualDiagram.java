@@ -144,7 +144,7 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 								if(cls != null && nin instanceof DotNode) {
 									// Colour the input node
 									if(!clsClrs.containsKey(cls)) {
-										clsClrs.put(cls, newColour(palette, paletteCounters));
+										clsClrs.put(cls, Palette.newColour(palette, paletteCounters));
 									}
 
 									DotNode dnin = (DotNode)nin;
@@ -165,7 +165,7 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 									// Colour the output node
 
 									if(!clsClrs.containsKey(cls)) {
-										clsClrs.put(cls, newColour(palette, paletteCounters));
+										clsClrs.put(cls, Palette.newColour(palette, paletteCounters));
 									}
 
 									DotNode dnout = (DotNode)nout;
@@ -182,7 +182,7 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 							// Colour the edge
 
 							if(!propClrs.containsKey(prop)) {
-								propClrs.put(prop, newColour(palette, paletteCounters));
+								propClrs.put(prop, Palette.newColour(palette, paletteCounters));
 							}
 
 							try {
@@ -211,39 +211,6 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 		}
 	}
 
-	private Color newColour(Set<Color> palette, int[] counters) {
-		Color newColour = null;
-
-		for(int i = 0; i < counters.length; i++) {
-			if(i < counters.length - 1) {
-				counters[i] += counters[counters.length - 1];
-				if(counters[i] < 0x100) {
-					newColour = new Color(counters[0], counters[1], counters[2]);
-					if(!palette.contains(newColour)) {
-						break;
-					}
-				}
-				else {
-					counters[i] = 0x00;
-				}
-			}
-			else {
-				if(counters[i] == 1) {
-					throw new RuntimeException("Run out of colours!");
-				}
-				counters[i] /= 2;
-				for(int j = 0; j < i; j++) {
-					counters[j] = 0x00;
-				}
-				i = -1;
-			}
-		}
-		if(newColour == null) {
-			throw new RuntimeException("Couldn't build a new colour!");
-		}
-		palette.add(newColour);
-		return newColour;
-	}
 
 	public static void main(String[] args) {
 		try {

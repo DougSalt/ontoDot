@@ -78,6 +78,10 @@ public abstract class AbstractDiagram implements Diagram {
   public String getShortForm(OWLEntity entity) {
     return getShortForm(entity.getIRI());
   }
+  
+  public String getFragment(OWLEntity entity) {
+  	return entity.getIRI().toURI().getFragment();
+  }
 
   public void ignoreOntology(IRI ontologyIRI) {
     ignore.add(ontologyIRI);

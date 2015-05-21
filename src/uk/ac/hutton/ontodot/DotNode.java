@@ -180,7 +180,10 @@ public class DotNode extends AbstractNode implements PropertyValueNode {
 	 */
 	public String getTextString() {
 		if(text.size() == 0) return null;
-		StringBuffer buff = new StringBuffer("{" + escape(label()));
+		
+		String nodelabel = attributes.containsKey("label") ? attributes.get("label").value() : label();
+		
+		StringBuffer buff = new StringBuffer("\"{" + escape(nodelabel));
 
 		for(List<String> row: text) {
 			buff.append("|{");
@@ -197,7 +200,7 @@ public class DotNode extends AbstractNode implements PropertyValueNode {
 			buff.append("}");
 		}
 
-		buff.append("}");
+		buff.append("}\"");
 
 		return buff.toString();
 	}
