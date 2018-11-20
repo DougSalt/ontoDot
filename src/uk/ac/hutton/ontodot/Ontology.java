@@ -29,9 +29,11 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -60,7 +62,11 @@ public class Ontology {
   
   public Ontology(IRI physical, boolean ignoreImportFailures) throws OWLOntologyCreationException {
     this();
-    manager.setSilentMissingImportsHandling(ignoreImportFailures);
+    //manager. setSilentMissingImportsHandling(ignoreImportFailures);
+    if (ignoreImportFailures)
+    	manager.getOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+    else
+    	manager.getOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.THROW_EXCEPTION);
     manager.loadOntologyFromOntologyDocument(physical);
   }
   
@@ -70,48 +76,52 @@ public class Ontology {
   
   public Ontology(File physical, boolean ignoreImportFailures) throws OWLOntologyCreationException {
     this();
-    manager.setSilentMissingImportsHandling(ignoreImportFailures);
+    //manager.setSilentMissingImportsHandling(ignoreImportFailures);
+    if (ignoreImportFailures)
+    	manager.getOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT);
+    else
+    	manager.getOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.THROW_EXCEPTION);
     manager.loadOntologyFromOntologyDocument(physical);
   }
   
   public Ontology(IRI logical, Map<IRI, IRI> ontologyLocations) throws OWLOntologyCreationException {
     this();
     for(IRI logic: ontologyLocations.keySet()) {
-      manager.addIRIMapper(new SimpleIRIMapper(logic, ontologyLocations.get(logic)));
+      manager.getIRIMappers().add(new SimpleIRIMapper(logic, ontologyLocations.get(logic)));
     }
     manager.loadOntology(logical);
   }
   
   public Ontology(IRI logical, File dir, boolean recursive) throws OWLOntologyCreationException {
     this();
-    manager.addIRIMapper(new AutoIRIMapper(dir, recursive));
+    manager.getIRIMappers().add(new AutoIRIMapper(dir, recursive));
     manager.loadOntology(logical);
   }
     
   public Set<OWLIndividual> getAllIndividuals() {
-    return getAllIndividuals(manager.getOntologies());
+    return getAllIndividuals(getOntologies());
   }
   
   public Set<OWLDataProperty> getAllDataProperties() {
-    return getAllDataProperties(manager.getOntologies());
+    return getAllDataProperties(getOntologies());
   }
   
   public Set<OWLObjectProperty> getAllObjectProperties() {
-    return getAllObjectProperties(manager.getOntologies());
+    return getAllObjectProperties(getOntologies());
   }
   
   public Set<OWLClass> getAllClasses() {
-    return getAllClasses(manager.getOntologies());
+    return getAllClasses(getOntologies());
   }
   
   public Set<OWLOntology> getOntologies() {
-    return manager.getOntologies();
+    return manager.ontologies().collect(Collectors.toSet());
   }
   
   public Set<OWLIndividual> getAllIndividuals(Set<OWLOntology> search) {
     Set<OWLIndividual> inds = new HashSet<OWLIndividual>();
     for(OWLOntology ont: search) {
-      inds.addAll(ont.getIndividualsInSignature());
+      inds.addAll(ont.individualsInSignature().collect(Collectors.toSet()));
     }
     return inds;
   }
@@ -119,7 +129,7 @@ public class Ontology {
   public Set<OWLDataProperty> getAllDataProperties(Set<OWLOntology> search) {
     Set<OWLDataProperty> props = new HashSet<OWLDataProperty>();
     for(OWLOntology ont: search) {
-      props.addAll(ont.getDataPropertiesInSignature());
+      props.addAll(ont.dataPropertiesInSignature().collect(Collectors.toSet()));
     }
     return props;
   }
@@ -127,7 +137,7 @@ public class Ontology {
   public Set<OWLObjectProperty> getAllObjectProperties(Set<OWLOntology> search) {
     Set<OWLObjectProperty> props = new HashSet<OWLObjectProperty>();
     for(OWLOntology ont: search) {
-      props.addAll(ont.getObjectPropertiesInSignature());
+      props.addAll(ont.objectPropertiesInSignature().collect(Collectors.toSet()));
     }
     return props;
   }
@@ -135,7 +145,7 @@ public class Ontology {
   public Set<OWLClass> getAllClasses(Set<OWLOntology> search) {
     Set<OWLClass> classes = new HashSet<OWLClass>();
     for(OWLOntology ont: search) {
-      classes.addAll(ont.getClassesInSignature());
+      classes.addAll(ont.classesInSignature().collect(Collectors.toSet()));
     }
     return classes;
   }

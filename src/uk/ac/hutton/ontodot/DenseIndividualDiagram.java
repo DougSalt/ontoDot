@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -72,7 +73,7 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 		// classes
 		Map<OWLIndividual, OWLClass> clsMap = new HashMap<OWLIndividual, OWLClass>();
 		for(OWLOntology ont: search(ontology)) {
-			for(OWLAxiom axiom: ont.getAxioms()) {
+			for(OWLAxiom axiom: ont.axioms().collect(Collectors.toSet())) {
 				if(axiom instanceof OWLClassAssertionAxiom) {
 					OWLClassAssertionAxiom clsAxiom = (OWLClassAssertionAxiom)axiom;
 
@@ -104,10 +105,10 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 
 		Map<OWLClass, Color> clsClrs = new HashMap<OWLClass, Color>();
 		Map<OWLObjectProperty, Color> propClrs = new HashMap<OWLObjectProperty, Color>();
-
+		
 		for(OWLOntology ont: search(ontology)) {
-			for(OWLAxiom axiom: ont.getAxioms()) {
-				if(axiom instanceof OWLObjectPropertyAssertionAxiom && !ignoring(axiom.getSignature())) {
+			for(OWLAxiom axiom: ont.axioms().collect(Collectors.toSet())) {
+				if(axiom instanceof OWLObjectPropertyAssertionAxiom && !ignoring(axiom.signature().collect(Collectors.toSet()))) {
 					OWLObjectPropertyAssertionAxiom objAxiom = (OWLObjectPropertyAssertionAxiom)axiom;
 
 					OWLIndividual in = objAxiom.getSubject();
@@ -233,6 +234,7 @@ public class DenseIndividualDiagram extends AbstractDiagram {
 
 			for(String prefix: args[3].split(",")) {
 				diag.ignoreOntology(prefix);
+				System.out.println("Ignoring prefix: " + prefix);				
 			}
 
 			diag.buildGraph();

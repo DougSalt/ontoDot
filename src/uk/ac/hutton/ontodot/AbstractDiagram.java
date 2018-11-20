@@ -100,7 +100,7 @@ public abstract class AbstractDiagram implements Diagram {
   }
 
   public void ignoreOntology(OWLOntology ontology) {
-    ignoreOntology(ontology.getOntologyID().getOntologyIRI());
+	 //ignoreOntology(ontology.getOntologyID().getOntologyIRI());
   }
 
   public void ignoreEntity(IRI entityIRI) {
@@ -111,11 +111,11 @@ public abstract class AbstractDiagram implements Diagram {
     ignoreEntity(entity.getIRI());
   }
 
-  public boolean ignoring(IRI entityIRI) {
-    if(ignore.contains(entityIRI)) return true;
+  public boolean ignoring(IRI ontologyIRI) {
+    if(ignore.contains(ontologyIRI)) return true;
 
-    String iriStr = entityIRI.toURI().toString();
-    String fragStr = entityIRI.getFragment();
+    String iriStr = ontologyIRI.toURI().toString();
+    String fragStr = ontologyIRI.getFragment();
 
     if(fragStr == null) return false;
 
@@ -130,7 +130,7 @@ public abstract class AbstractDiagram implements Diagram {
   }
 
   public boolean ignoring(OWLOntology ontology) {
-    return ignoring(ontology.getOntologyID().getOntologyIRI());
+    return ignoring(ontology.getOntologyID().getOntologyIRI().get());
   }
 
   public boolean ignoring(Set<OWLEntity> entities) {

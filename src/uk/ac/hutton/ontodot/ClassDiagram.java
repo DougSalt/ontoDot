@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -76,7 +77,7 @@ public class ClassDiagram extends AbstractDiagram {
 		Map<OWLObjectProperty, Set<OWLClass>> ranges = new HashMap<OWLObjectProperty, Set<OWLClass>>();
 
 		for(OWLOntology ont: search(ontology)) {
-			for(OWLAxiom axiom: ont.getAxioms()) {
+			for(OWLAxiom axiom: ont.axioms().collect(Collectors.toSet())) {
 				if(axiom instanceof OWLDataPropertyDomainAxiom) {
 					OWLClassExpression cls = ((OWLDataPropertyDomainAxiom)axiom).getDomain();
 					OWLDataPropertyExpression prop = ((OWLDataPropertyDomainAxiom)axiom).getProperty();
@@ -198,6 +199,7 @@ public class ClassDiagram extends AbstractDiagram {
 			if(args.length >= 5) {
 				for(String prefix: args[4].split(",")) {
 					diag.ignoreOntology(prefix);
+					System.out.println("Ignoring prefix: " + prefix);
 				}
 			}
 

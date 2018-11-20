@@ -26,6 +26,7 @@ package uk.ac.hutton.ontodot;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -57,8 +58,8 @@ public class IndividualDiagram extends AbstractDiagram {
   @Override
   public void buildGraph() {
     for(OWLOntology ont: search(ontology)) {
-      for(OWLAxiom axiom: ont.getAxioms()) {
-        if(axiom instanceof OWLObjectPropertyAssertionAxiom && !ignoring(axiom.getSignature())) {
+      for(OWLAxiom axiom: ont.axioms().collect(Collectors.toSet())) {
+        if(axiom instanceof OWLObjectPropertyAssertionAxiom && !ignoring(axiom.signature().collect(Collectors.toSet()))){
           OWLObjectPropertyAssertionAxiom objAxiom = (OWLObjectPropertyAssertionAxiom)axiom;
 
           OWLIndividual in = objAxiom.getSubject();
@@ -106,7 +107,8 @@ public class IndividualDiagram extends AbstractDiagram {
       }
 
       for(String prefix: args[3].split(",")) {
-        diag.ignoreOntology(prefix);
+			diag.ignoreOntology(prefix);
+			System.out.println("Ignoring prefix: " + prefix);
       }
 
       diag.buildGraph();
