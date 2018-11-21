@@ -50,11 +50,13 @@ cp+=:$BASE/lib/xz-1.6.jar
 # dependency resolution in java are complete crap. I spend so much of time
 # tracking down jars of the correct version. Java is astonishingly brittle.
 cp+=:$BASE/lib/slf4j-api-1.7.22.jar
+cp+=:$BASE/lib/slf4j-simple-1.7.22.jar
 set -xv
 $JAVA -cp $cp uk.ac.hutton.ontodot.DenseIndividualDiagram \
     $HOME/git/diary/ontologies/mindmap.owl \
     $HOME/git/diary/ontologies \
-    none=none \
-    none
+    mm=http://www.semanticweb.org/ds42723/ontologies/2016/8/Mindmap,prov=http://www.w3.org/ns/prov \
+    none \
+    doug.dot
     
     
