@@ -1,9 +1,10 @@
-unset JAVA_HOME
+#!/bin/sh
+
 JAVA=$(which java)
 BASE=/home/ds42723/git/ontoDot
-# This makes no fucking sense.
-cp=$BASE/bin
-cp+=:$BASE/lib/animal-sniffer-annotations-1.14.jar
+
+cp=
+cp+=$BASE/lib/animal-sniffer-annotations-1.14.jar
 cp+=:$BASE/lib/caffeine-2.6.1.jar
 cp+=:$BASE/lib/commons-codec-1.10.jar
 cp+=:$BASE/lib/commons-io-2.5.jar
@@ -45,18 +46,6 @@ cp+=:$BASE/lib/rdf4j-rio-turtle-2.3.2.jar
 cp+=:$BASE/lib/rdf4j-util-2.3.2.jar
 cp+=:$BASE/lib/utils.jar
 cp+=:$BASE/lib/xz-1.6.jar
-# This next library was not in the dependency pack for owlapi, which makes me
-# think that the owlapi bods do not what they are doing, or the tools for
-# dependency resolution in java are complete crap. I spend so much of time
-# tracking down jars of the correct version. Java is astonishingly brittle.
 cp+=:$BASE/lib/slf4j-api-1.7.22.jar
 cp+=:$BASE/lib/slf4j-simple-1.7.22.jar
-set -xv
-$JAVA -cp $cp uk.ac.hutton.ontodot.IndividualDiagram \
-    $HOME/git/diary/ontologies/mindmap.owl \
-    $HOME/git/diary/ontologies \
-    mm=http://www.semanticweb.org/ds42723/ontologies/2016/8/Mindmap,prov=http://www.w3.org/ns/prov \
-    none \
-    doug.dot
-    
-    
+javac -d bin -cp $cp src/uk/ac/hutton/ontodot/*

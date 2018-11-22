@@ -1,7 +1,76 @@
-unset JAVA_HOME
+#!/bin/sh
+
+VERSION=1.0
 JAVA=$(which java)
 BASE=/home/ds42723/git/ontoDot
-# This makes no fucking sense.
+
+unset JAVA_HOME
+
+help() {
+    echo "my butt"
+    exit 0
+}
+
+OPTS=$(getopt -o hi:o:p:s:t:v --long help,ignore:,ontology:,prefix:,search:,type:,version -- "$@")
+
+if [ $? != 0 ]
+then
+    exit -1
+fi
+
+IGNORE=Honorificabilitudinitatibus
+PREFIX='=http://local-social-innovation.eu/ontologies/social_network/aberdeeen_case_study,prov=http://www.w3.org/ns/prov'
+SEARCH="$HOME/git/SMARTEES/ontologies/"
+ONTOLOGY="$HOME/git/SMARTEES/ontologies/aberdeen case study social network.owl"
+OUTPUT=doug
+TYPE=ColourClassDiagram
+
+while true
+do
+    case "$1" in
+    -h | --help ) help;;
+    -i | --ignore ) IGNORE+=,"$2"; shift 2;;
+    -o | --output ) OUTPUT="$2"; shift 2;;
+    -p | --prefix ) PREFIX+=,"$2"; shift 2;;
+    -s | --search ) SEARCH+=:"$2"; shift 2;;
+    -t | --type ) TYPE="$2"; shift 2;;
+    -v | --version) echo $VERSION; exit 0;;
+    -- ) shift; break ;;
+    * ) break ;;
+    esac
+done
+
+CLASS_TYPES="ClassDiagram "
+CLASS_TYPES+="ColourClassDiagram "
+CLASS_TYPES+="IndividualDiagram"
+CLASS_TYPES+="DenseIndividualDiagram"
+
+if  [[ $CLASS_TYPES != *${TYPE}* ]]
+then
+    echo "$0: incorrect type of TYPE, $TYPE, must be one of $CLASS_TYPES"
+    exit -1
+fi
+
+if [ -n "$1" ]
+then
+    ONTOLOGY=$1
+fi
+
+if [ "$SEARCH" = ":"* ]
+then
+    SEARCH=$(echo "$SEARCH" | cut -b 2-)
+fi
+
+if [ "$PREFIX" = ","* ]
+then
+    PREFIX=$(echo "$PREFIX" | cut -b 2-)
+fi
+
+if [ "$IGNORE" = ","* ]
+then
+    IGNORE=$(echo "$IGNORE" | cut -b 2-)
+fi
+
 cp=$BASE/bin
 cp+=:$BASE/lib/animal-sniffer-annotations-1.14.jar
 cp+=:$BASE/lib/caffeine-2.6.1.jar
@@ -51,12 +120,32 @@ cp+=:$BASE/lib/xz-1.6.jar
 # tracking down jars of the correct version. Java is astonishingly brittle.
 cp+=:$BASE/lib/slf4j-api-1.7.22.jar
 cp+=:$BASE/lib/slf4j-simple-1.7.22.jar
-set -xv
-$JAVA -cp $cp uk.ac.hutton.ontodot.DenseIndividualDiagram \
-    $HOME/git/diary/ontologies/mindmap.owl \
-    $HOME/git/diary/ontologies \
-    mm=http://www.semanticweb.org/ds42723/ontologies/2016/8/Mindmap,prov=http://www.w3.org/ns/prov \
-    none \
-    doug.dot
-    
+
+#set -xv
+if  [ $TYPE = "ClassDiagram" ] \
+||  [ $TYPE = "ColourClassDiagram" ]
+then
+    $JAVA -cp $cp \
+        uk.ac.hutton.ontodot.$TYPE \
+        "$ONTOLOGY" \
+        "$SEARCH" \
+        ${OUTPUT}.dot \
+        "$PREFIX" 
+else
+    $JAVA -cp $cp \
+        uk.ac.hutton.ontodot.$TYPE \
+        "$ONTOLOGY" \
+        "$SEARCH" \
+        "$PREFIX" \
+        "$IGNORE" \
+        ${OUTPUT}.dot
+fi
+     
+if [ $? != 0 ]
+then
+    exit -1
+fi
+
+dot -Tpng -o ${OUTPUT}.png ${OUTPUT}.dot
+   
     
