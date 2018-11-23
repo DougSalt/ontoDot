@@ -76,7 +76,7 @@ public class ClassAndIndividualDiagram extends AbstractDiagram {
 		Map<OWLClass, Node> nodes = new HashMap<OWLClass, Node>();
 		Map<OWLObjectProperty, Set<OWLClass>> domains = new HashMap<OWLObjectProperty, Set<OWLClass>>();
 		Map<OWLObjectProperty, Set<OWLClass>> ranges = new HashMap<OWLObjectProperty, Set<OWLClass>>();
-		Map<OWLObjectProperty, Set<OWLIndividual>> individuals = new HashMap<OWLObjectProperty, Set<OWLIndividual>>();
+		Map<OWLIndividual, Node> individuals = new HashMap<OWLIndividual, Node>();
 		Palette palette = new Palette();
 
 		for(OWLOntology ont: search(ontology).stream().collect(Collectors.toSet())) {
@@ -145,9 +145,25 @@ public class ClassAndIndividualDiagram extends AbstractDiagram {
 
                     OWLIndividual in = objAxiom.getSubject();
                     OWLIndividual out = objAxiom.getObject();
-                            System.out.println("FFFFFFFFFFFFFFROGGGLE" + in);    
-                    Node inNode = graph.addNode(getShortForm(in.asOWLNamedIndividual()));
+     
+                    Node inNode;
+                    if(individuals.containsKey(in.asOWLNamedIndividual())) {
+                        inNode = individuals.get(in.asOWLNamedIndividual());
+                    }
+                    else {
+                        inNode = graph.addNode(getShortForm(in.asOWLNamedIndividual()));
+                        individuals.put(in.asOWLNamedIndividual(), inNode);
+                    }
+
                     Node outNode = graph.addNode(getShortForm(out.asOWLNamedIndividual()));
+                    if(individuals.containsKey(out.asOWLNamedIndividual())) {
+                        outNode = individuals.get(out.asOWLNamedIndividual());
+                    }
+                    else {
+                        outNode = graph.addNode(getShortForm(in.asOWLNamedIndividual()));
+                        individuals.put(in.asOWLNamedIndividual(), outNode);
+                    }
+
                     if(in.isNamed() && out.isNamed()) {
 						if(inNode instanceof DotNode) {
                             try {
@@ -199,9 +215,9 @@ public class ClassAndIndividualDiagram extends AbstractDiagram {
 				}
 			}
 		}
-        for(String key: palette.getOntologyKeyString()) {
-			System.out.println(key);
-		}
+        //for(String key: palette.getOntologyKeyString()) {
+		//	System.out.println(key);
+		//}
 
 	}
 
