@@ -44,6 +44,7 @@ CLASS_TYPES="ClassDiagram "
 CLASS_TYPES+="ColourClassDiagram "
 CLASS_TYPES+="IndividualDiagram"
 CLASS_TYPES+="DenseIndividualDiagram"
+CLASS_TYPES+="ClassAndIndividualDiagram"
 
 if  [[ $CLASS_TYPES != *${TYPE}* ]]
 then
