@@ -2,7 +2,7 @@
 
 VERSION=1.0
 JAVA=$(which java)
-BASE=/home/ds42723/git/ontoDot
+BASE=$HOME/git/ontoDot
 
 unset JAVA_HOME
 
@@ -147,6 +147,11 @@ then
     exit -1
 fi
 
-dot -Tpng -o ${OUTPUT}.png ${OUTPUT}.dot
+if  [ $TYPE = "ClassAndIndividualDiagram" ]
+then
+    neato -Tpng -o ${OUTPUT}.png ${OUTPUT}.dot
+else
+    dot -Tpng -o ${OUTPUT}.png ${OUTPUT}.dot
+fi
    
     

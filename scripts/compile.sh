@@ -1,7 +1,7 @@
 #!/bin/sh
 
 JAVA=$(which java)
-BASE=/home/ds42723/git/ontoDot
+BASE=$HOME/git/ontoDot
 
 cp=
 cp+=$BASE/lib/animal-sniffer-annotations-1.14.jar
@@ -48,4 +48,4 @@ cp+=:$BASE/lib/utils.jar
 cp+=:$BASE/lib/xz-1.6.jar
 cp+=:$BASE/lib/slf4j-api-1.7.22.jar
 cp+=:$BASE/lib/slf4j-simple-1.7.22.jar
-javac -d bin -cp $cp src/uk/ac/hutton/ontodot/*
+javac -d bin -cp $cp -Xlint src/uk/ac/hutton/ontodot/*

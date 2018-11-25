@@ -72,6 +72,9 @@ public class DotGraphAttribute extends DotAttribute {
     new DotAttributeValidator("size", Double.class),
     new DotAttributeValidator("style", String.class, "filled"),
     
+    new DotAttributeValidator("layout", String.class, "neato", "circo", "twopi", "dot", "fdp", "sfdp", "patchwork"),
+    new DotAttributeValidator("overlap", String.class, "false", "scalexy"),
+    new DotAttributeValidator("splines", String.class, "true", "false"),
   };
 
   private static Map<String, DotAttributeValidator> attributeMap = DotAttributeValidator.map(graphAttributes);

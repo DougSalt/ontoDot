@@ -25,6 +25,8 @@ package uk.ac.hutton.ontodot;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -40,11 +42,13 @@ public abstract class AbstractDiagram implements Diagram {
   private Set<IRI> ignore;
   private DefaultPrefixManager prefix;
   private String defaultPrefix;
+  private HashMap<String, String> label;
 
   protected AbstractDiagram() {
     ignore = new HashSet<IRI>();
     prefix = new DefaultPrefixManager();
     defaultPrefix = null;
+    label = new HashMap<String, String>();
   }
 
   public void setPrefix(IRI ontologyIRI, String namespace) {
